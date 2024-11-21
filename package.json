@@ -1,17 +1,14 @@
 {
-  "name": "commandkit-starter-files",
+  "name": "starter-files",
   "version": "0.0.0",
   "main": "src/index.js",
-  "scripts": {
-    "dev": "commandkit dev",
-    "build": "commandkit build",
-    "start": "commandkit start"
-  },
   "dependencies": {
-    "commandkit": "^0.1.10",
+    "commandkit": "^0.0.8",
     "discord.js": "^14.16.3",
     "dotenv": "^16.4.5",
-    "mongodb": "^4.17.2",
-    "mongoose": "^8.8.0"
+    "install": "^0.13.0",
+    "mongoose": "^7.8.2",
+    "npm": "^10.9.0",
+    "react": "^18.2.0"
   }
 }

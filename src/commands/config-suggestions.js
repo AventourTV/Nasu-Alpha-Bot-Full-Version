@@ -2,82 +2,83 @@ const { SlashCommandBuilder, ChannelType, ChatInputCommandInteraction } = requir
 const GuildConfiguration = require('../models/GuildConfiguration');
 
 module.exports = {
-    /**
-     * Command handler for configuring suggestions channels.
-     * @param {Object} param0 
-     * @param {ChatInputCommandInteraction} param0.interaction
-     */
-    run: async ({ interaction }) => {
-        let guildConfiguration = await GuildConfiguration.findOne({ guildId: interaction.guildId });
+  /**
+   *
+   * @param {Object} param0
+   * @param {ChatInputCommandInteraction} param0.interaction
+   */
+  run: async ({ interaction }) => {
+    let guildConfiguration = await GuildConfiguration.findOne({ guildId: interaction.guildId });
 
-        if (!guildConfiguration) {
-            guildConfiguration = new GuildConfiguration({ guildId: interaction.guildId });
-        }
+    if (!guildConfiguration) {
+      guildConfiguration = new GuildConfiguration({ guildId: interaction.guildId });
+    }
 
-        const subcommand = interaction.options.getSubcommand();
+    const subcommand = interaction.options.getSubcommand();
 
-        if (subcommand === 'add') {
-            const channel = interaction.options.getChannel('channel');
+    if (subcommand === 'add') {
+      const channel = interaction.options.getChannel('channel');
 
-            if (guildConfiguration.suggestionChannelIds.includes(channel.id)) {
-                await interaction.reply(`${channel} is already a suggestions channel.`);
-                return;
-            }
+      if (guildConfiguration.suggestionChannelIds.includes(channel.id)) {
+        await interaction.reply(`${channel} is already a suggestions channel.`);
+        return;
+      }
 
-            guildConfiguration.suggestionChannelIds.push(channel.id);
-            await guildConfiguration.save();
+      guildConfiguration.suggestionChannelIds.push(channel.id);
+      await guildConfiguration.save();
 
-            await interaction.reply(`Added ${channel} to suggestions channels.`);
-            return;
-        }
+      await interaction.reply(`Added ${channel} to suggestion channels.`);
+      return;
+    }
 
-        if (subcommand === 'remove') {
-            const channel = interaction.options.getChannel('channel');
-            if (!guildConfiguration.suggestionChannelIds.includes(channel.id)) {
-                await interaction.reply(`${channel} is not a suggestion channel.`);
-                return;
-            }
+    if (subcommand === 'remove') {
+      const channel = interaction.options.getChannel('channel');
 
-            guildConfiguration.suggestionChannelIds = guildConfiguration.suggestionChannelIds.filter(
-                (id) => id !== channel.id
-            );
+      if (!guildConfiguration.suggestionChannelIds.includes(channel.id)) {
+        await interaction.reply(`${channel} is not a suggestion channel.`);
+        return;
+      }
 
-            await guildConfiguration.save();
+      guildConfiguration.suggestionChannelIds = guildConfiguration.suggestionChannelIds.filter(
+        (id) => id !== channel.id
+      );
+      await guildConfiguration.save();
 
-            await interaction.reply(`Removed ${channel} from suggestion channels.`);
-            return;
-        }
-    },
-    options: {
-        userPermissions: ['Administrator']
-    },
+      await interaction.reply(`Removed ${channel} from suggestion channels.`);
+      return;
+    }
+  },
 
-    data: new SlashCommandBuilder()
-        .setName('config-suggestions')
-        .setDescription('Configure suggestions.')
-        .setDMPermission(false)  // This line prevents the command from being used in DMs
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName('add')
-                .setDescription('Add a suggestions channel.')
-                .addChannelOption(option =>
-                    option
-                        .setName('channel')
-                        .setDescription('The channel you want to add.')
-                        .addChannelTypes(ChannelType.GuildText)
-                        .setRequired(true)
-                )
+  options: {
+    userPermissions: ['Administrator'],
+  },
+
+  data: new SlashCommandBuilder()
+    .setName('config-suggestions')
+    .setDescription('Configure suggstions.')
+    .setDMPermission(false)
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName('add')
+        .setDescription('Add a suggestions channel.')
+        .addChannelOption((option) =>
+          option
+            .setName('channel')
+            .setDescription('The channel you want to add.')
+            .addChannelTypes(ChannelType.GuildText)
+            .setRequired(true)
         )
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName('remove')
-                .setDescription('Remove a suggestions channel.')
-                .addChannelOption(option =>
-                    option
-                        .setName('channel')
-                        .setDescription('The channel you want to remove.')
-                        .addChannelTypes(ChannelType.GuildText)
-                        .setRequired(true)
-                )
-        ),
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName('remove')
+        .setDescription('Remove a suggestions channel.')
+        .addChannelOption((option) =>
+          option
+            .setName('channel')
+            .setDescription('The channel you want to remove.')
+            .addChannelTypes(ChannelType.GuildText)
+            .setRequired(true)
+        )
+    ),
 };

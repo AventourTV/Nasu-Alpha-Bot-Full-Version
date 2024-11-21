@@ -1,10 +1,9 @@
-const mongoose = require('mongoose');
+const { Schema, model } = require('mongoose');
 
-const GuildConfigurationSchema = new mongoose.Schema({
+const guildConfigurationSchema = new Schema({
   guildId: {
     type: String,
     required: true,
-    unique: true,
   },
   suggestionChannelIds: {
     type: [String],
@@ -12,4 +11,4 @@ const GuildConfigurationSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model('GuildConfiguration', GuildConfigurationSchema);
+module.exports = model('GuildConfiguration', guildConfigurationSchema);

@@ -1,38 +1,37 @@
-const { Client } = require('discord.js');
+const { Client, IntentsBitField, ActivityType, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const { CommandKit } = require('commandkit');
 const mongoose = require('mongoose');
-require('dotenv/config');
+require('dotenv').config();
 
 const client = new Client({
-  intents: ['Guilds', 'GuildMembers', 'GuildMessages', 'MessageContent'],
+  intents: [
+    IntentsBitField.Flags.Guilds,
+    IntentsBitField.Flags.GuildMembers,
+    IntentsBitField.Flags.GuildMessages,
+    IntentsBitField.Flags.MessageContent,
+  ],
 });
 
-// Initialize CommandKit to manage commands and events
 new CommandKit({
   client,
   commandsPath: `${__dirname}/commands`,
   eventsPath: `${__dirname}/events`,
-  bulkRegister: true,
 });
 
-// Connect to MongoDB and login the bot
+// Import the welcome message functionality
+require('./events/joinMessage/welcomeMessage')(client);
+
+client.on('ready', (c) => {
+  console.log(`✅ | ${c.user.tag} is online.`);
+  client.user.setActivity({
+    name: 'discord.gg/nasualpha',
+    type: ActivityType.Custom,
+  });
+});
+
 mongoose.connect(process.env.MONGODB_URI).then(() => {
   console.log('Connected to MongoDB');
   client.login(process.env.TOKEN);
-});
-
-// Register the command for a specific guild when the bot is ready
-client.once('ready', async () => {
-  const guild = client.guilds.cache.get('1301073378538426448'); // Replace with your server's ID
-
-  if (guild) {
-    // Register the config-suggestions command for this guild only
-    const command = require('./commands/config-suggestions'); // Adjust path if needed
-    await guild.commands.set([command.data]);
-    console.log('Registered commands for guild only');
-  } else {
-    console.log("Couldn't find the guild. Make sure the bot is in the server.");
-  }
-
-  console.log(`${client.user.tag} is online!`);
+}).catch((error) => {
+  console.error('Error connecting to MongoDB:', error);
 });

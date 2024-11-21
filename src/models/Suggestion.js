@@ -1,40 +1,44 @@
 const { Schema, model } = require('mongoose');
 const { randomUUID } = require('crypto');
 
-const suggestionSchema = new Schema({
+const suggestionSchema = new Schema(
+  {
     suggestionId: {
-        type: String,
-        default: randomUUID,
+      type: String,
+      default: randomUUID,
     },
     authorId: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
     guildId: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
     messageId: {
-        type: String,
-        required: true,
-        unique: true,
+      type: String,
+      required: false,
+      unique: true,
     },
     content: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
     status: {
-        type: String,
-        default: 'pending', // Correct the spelling if it was "deafult"
+      type: String,
+      // "pending", "approved", "rejected",
+      default: 'pending',
     },
     upvotes: {
-        type: Array,
-        default: [],
+      type: [String],
+      default: [],
     },
     downvotes: {
-        type: Array,
-        default: [],
+      type: [String],
+      default: [],
     },
-}, { timestamps: true });
+  },
+  { timestamps: true }
+);
 
 module.exports = model('Suggestion', suggestionSchema);
